@@ -13,6 +13,8 @@ Tired of drawing mazes by hand? Wouldn't you rather have a [single printable fil
 
 Every maze is randomly generated, but might look like the following (see also the [example pdf](infinitely_printable_maze.pdf)):
 
+<img width="500" alt="Infinitely Printable Maze as PDF" src="https://user-images.githubusercontent.com/358580/127328785-03e20a1d-6db0-4d33-a704-50c1eab425a0.png">
+
 ## A quine?
 
 Yeah, you can copy the content of the displayed PostScript file (you might have to convert it to a PDF first to get your viewer to extract any text from it) and then paste it as a `.ps` to get a file that contains exactly the same code as the original PostScript file. In other words, the original file contains not just the code required to draw a randomly generated maze, but also contains code to display its own code (including the code to display its own code). The formatting only matters for the short footer that contains the bootstrap sequence for the whole quine, while the bulk of the code is printed inside the maze and is whitespace-insensitive (see the [unformatted file](infinitely_printable_maze_unformatted.ps) for a reformatted example that contains exactly the same code as the more cleanly formatted [infinitely_printable_maze.ps](infinitely_printable_maze.ps)).
