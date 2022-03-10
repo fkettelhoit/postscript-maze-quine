@@ -1,18 +1,19 @@
 %!PS-Adobe-2.0
 %Infinitely Printable Maze
-%This Maze is a PostScript Quine
 (/code ? /suffix ?
-
-realtime srand
 
 /h1 (%!PS-Adobe-2.0)!
 /h2 (%Infinitely Printable Maze)!
-/h3 (%This Maze is a PostScript Quine)!
 
 /page [595 842]!
 /margin 30 !
-/w 30 !
-/h 30 !
+/w 29 !
+/h 29 !
+
+<</PageSize page>> setpagedevice
+2 setlinewidth
+1 setlinecap
+realtime srand
 
 /t true !
 /f false !
@@ -20,10 +21,10 @@ realtime srand
 /- {sub}!
 /* {mul}!
 
-/@ {3 1 roll get ~ get}!
-/@@ {4 2 roll get 3 -2 roll put}!
+/@ {3 1 ^ get ~ get}!
+/@@ {4 2 ^ get 3 -2 ^ put}!
 
-/!! {~ /dict /begin 4 -1 roll /exec /end 6 array astore {cvx} map cvx def}!
+/!! {~ /dict /begin 4 -1 ^ /exec /end 6 : {cvx} map cvx def}!
 
 /grid 5 {
     /v ?
@@ -52,10 +53,10 @@ realtime srand
     [[x 1 - y][x 1 + y][x y 1 -][x y 1 +]]
 }!!
 
-/shuffle {aload pop 4 rand roll 4 array astore}!
+/shuffle {aload . 4 rand ^ 4 :}!
 
-/v-walls t grid !
-/h-walls t grid !
+/vwalls t grid !
+/hwalls t grid !
 
 /erase 4 {
     /y1 ?
@@ -63,14 +64,14 @@ realtime srand
     /y0 ?
     /x0 ?
     x0 x1 eq {
-        h-walls x0 y0 y1 lt {y1} {y0} ifelse f @@
+        hwalls x0 y0 y1 lt {y1} {y0} ifelse f @@
     } {
-        v-walls x0 x1 lt {x1} {x0} ifelse y0 f @@
+        vwalls x0 x1 lt {x1} {x0} ifelse y0 f @@
     } ifelse
 }!!
 
 /visited f grid !
-/frontiers f grid !
+/frontier f grid !
 /traces 0 grid !
 /trace 0 !
 
@@ -79,10 +80,10 @@ realtime srand
     /x ?
     /ns 0 !
     visited x y t @@
-    frontiers x y t @@
+    frontier x y t @@
     x y
     x y neighbors shuffle {
-        aload pop
+        aload .
         /ny ?
         /nx ?
         nx 0 ge
@@ -92,17 +93,17 @@ realtime srand
         ns 0 eq & {
             visited nx ny @ not {
                 traces nx ny trace @@
-                frontiers nx ny t @@
+                frontier nx ny t @@
                 visited nx ny t @@
                 /ns ns 1 + !
                 x y nx ny erase
-                pop pop nx ny
+                . . nx ny
             } if
         } if
     } forall
     ns 0 eq {
-        frontiers x y f @@
-        pop pop find visit
+        frontier x y f @@
+        . . find visit
     } if
 }!!
 
@@ -115,7 +116,7 @@ realtime srand
         /x ~ rx + w mod !
         0 1 h 1 - {
             /y ~ ry + h mod !
-            frontiers x y @ {
+            frontier x y @ {
                 /fx x !
                 /fy y !
             } if
@@ -127,7 +128,7 @@ realtime srand
 /next 2 {
     /y ?
     /x ?
-    frontiers x y @ {x y} {find} ifelse
+    frontier x y @ {x y} {find} ifelse
 }!!
 
 /walk {w h * 1 - {next visit /trace trace 1 + !} repeat}!
@@ -135,13 +136,13 @@ realtime srand
 /x w 2 idiv !
 /y 0 !
 
-v-walls x y t @@
-v-walls x 1 - y t @@
-h-walls x y f @@
-frontiers x y t @@
+vwalls x y t @@
+vwalls x 1 - y t @@
+hwalls x y f @@
+frontier x y t @@
 x y walk
 
-/gray {w h * div .85 * .85 ~ - setgray} def
+/gray {w h * div .8 * .8 ~ - setgray} def
 
 /trim 3 {
     /in ?
@@ -155,28 +156,21 @@ x y walk
                 out i pre len + ( ) $
                 /i i pre len + 1 + !
             } if
-            pop
+            .
         } {
-            out i 3 -1 roll $
+            out i 3 -1 ^ $
             out exit
         } ifelse
     } loop
 }!!
 
-/header {trim show}!
-
-<< /PageSize page >> setpagedevice
-2 setlinewidth
-1 setlinecap
-
 /font {/Courier-Bold findfont ~ scalefont setfont}!
 
 24 font
 newpath
-traces w 2 idiv h 1 - @ gray
-x0 740 moveto h1 header
-x0 720 moveto h2 header
-x0 700 moveto h3 header
+w h * gray
+x0 740 moveto h1 trim show
+x0 720 moveto h2 trim show
 
 10 font
 
@@ -193,7 +187,7 @@ x0 700 moveto h3 header
     out
 }!!
 
-/move 2 {
+/mv 2 {
     /y ?
     /x ?
     x 2 div .1 + y 2 div .1 + cell moveto
@@ -214,22 +208,22 @@ code wrap {
         dup len
         /l ?
         l x + w 2 * ge {
-            x 1 w 2 * 1 - {y move space show} for
+            x 1 w 2 * 1 - {y mv space show} for
             /y y 1 - !
             /x 0 !
         } if
         0 1 l 1 - {
             /i ?
-            x i + y move
+            x i + y mv
             dup i 1 getinterval show
         } for
         l 0 ne {
-            x l + y move space show
+            x l + y mv space show
             /x x l + 1 + !
         } if
-        pop pop
+        . .
     } {
-        pop exit
+        . exit
     } ifelse
 } loop
 
@@ -237,7 +231,7 @@ y -1 0 {
     /y ?
     x 1 w 2 * 1 - {
         /x ?
-        x y move
+        x y mv
         y 0 eq x w 2 * 1 - eq & {rpar} {space} ifelse show
     } for
     /x 0 !
@@ -246,10 +240,10 @@ y -1 0 {
 /x 0 !
 /y -2 !
 suffix {wrap trim} map {
-    x y move show
+    x y mv show
     /y y 1 - !
 } forall
-x y move (dup cvx exec 5 array astore dup {cvx exec} map quine) trim show
+x y mv (dup cvx exec 5 array astore dup {cvx exec} map quine) trim show
 
 0 setgray
 
@@ -262,14 +256,14 @@ x1 y0 lineto
 stroke
 
 /draw 4 {
-    /vertical ?
-    /horizontal ?
+    /vert ?
+    /horiz ?
     /y ?
     /x ?
     newpath x y cell moveto
-    horizontal {1 cells 0 rlineto} if
+    horiz {1 cells 0 rlineto} if
     x y cell moveto
-    vertical {0 1 cells rlineto} if
+    vert {0 1 cells rlineto} if
     stroke
 }!!
 
@@ -278,16 +272,16 @@ stroke
     0 1 h 1 - {
         /y ?
         x y
-        h-walls x y @
-        v-walls x y @
+        hwalls x y @
+        vwalls x y @
         draw
     } for
 } for
 
 showpage )
-(/! {def} def /~ {exch}! /? {~ !}! /+ {add}! /$ {putinterval}! /len {length}!)
+(/!{def}def/.{pop}!/~{exch}!/^{roll}!/+{add}!/${putinterval}!/len{length}!/?{~ !}!)
 (/str {/s ? /i ? /pre ? s i pre $ s i pre len + ( ) $ /i i pre len + 1 + !}!)
-(/rep {/t ? /s ? /i 0 ! s {t search {i s str pop} {pop s exit} ifelse} loop}!)
-(/quine {pop ~ <3b> rep <0d> rep <0a> rep dup cvx exec}!)
-(/map {mark 3 1 roll forall counttomark array astore exch pop} def)
+(/rep {/t ? /s ? /i 0 ! s {t search {i s str .} {. s exit} ifelse} loop}!)
+(/quine {. ~ <3b> rep <0d> rep <0a> rep dup cvx exec}! /:{array astore}!)
+(/map {mark 3 1 roll forall counttomark : exch .} def)
 dup cvx exec 5 array astore dup {cvx exec} map quine
