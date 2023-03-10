@@ -19,6 +19,12 @@ Every maze is randomly generated, but might look like the following (see also th
 
 Yeah, you can copy the content of the displayed PostScript file (you might have to convert it to a PDF first to get your viewer to extract any text from it) and then paste it as a `.ps` to get a file that contains exactly the same code as the original PostScript file. In other words, the original file contains not just the code required to draw a randomly generated maze, but also contains code to display its own code (including the code to display its own code). The formatting only matters for the short footer that contains the bootstrap sequence for the whole quine, while the bulk of the code is printed inside the maze and is whitespace-insensitive (see the [unformatted file](infinitely_printable_maze_unformatted.ps) for a reformatted example that contains exactly the same code as the more cleanly formatted [infinitely_printable_maze.ps](infinitely_printable_maze.ps)).
 
+The large version of the maze uses a hand-drawn typeface instead of one of the built-in PostScript fonts. To avoid the need to copy the program by typing it out manually, it prints its own source code to the standard output, which can be retrieved e.g. with `ghostscript`:
+
+```
+gs -dNOPAUSE -dBATCH -dNODISPLAY -q infinitely_printable_maze_large.ps
+```
+
 In a nutshell, the quine pushes several strings as data onto the stack and then proceeds with a bootstrap sequence:
 
 First of all, `dup cvx exec 5 array astore dup {cvx exec} map quine` is executed, which begins by executing the last of the pushed strings (`(/map {mark 3 1 roll forall counttomark array astore exch pop} def)`), which defines a `map` operator (to map another operator over an array) and uses it to execute the other pushed strings (by mapping `{cvx exec}` over these strings):
